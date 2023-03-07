@@ -1,6 +1,10 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 import pandas as pd
 import json
+import seaborn as sns
+import numpy as np
+import matplotlib.pyplot as plt
+from pandas.plotting import table
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 """
 	Функции, для удобного и быстрого считывания json данных в
@@ -8,6 +12,7 @@ import json
 
 """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
 def get_balance_info_df(path):
     """
         Функция возвращает датафрейм с данными о балансе пользователей беседы.
@@ -91,5 +96,46 @@ def get_allSms_todaySms(path):
     with open(path, 'r', encoding="utf-8", errors='ignore') as file:
         data_file = json.load(file)
     
-    return {"all":data_file['chat_info'][0]["all_sms"] ,"today":data_file['chat_info'][0]["sms_today"]}
+    return {"all":data_file['chat_info'][0]["all_sms"] ,"today":data_file['chat_info'][0]["today"], 'day':data_file['chat_info'][0]["sms_today"]}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+def daily_info():
+    """
+        Функция выгружающая дневную информацию.
+    """
+    
+    # Указание путей и считывание датафрейсов:
+    path_bi = 'rpg/balance_info.json'
+    path_ui = 'rpg/user_info.json'
+    path_si = 'rpg/stats_info.json'
+    path_dy = 'rpg/chat_info.json'
+    
+    df_bi = get_balance_info_df(path_bi)
+    df_ui = get_user_info_df(path_ui)
+    df_si = get_stats_info_df(path_si)
+    extra_df = df_bi.merge(df_ui, how="inner", on="id")
+    full_df  = extra_df.merge(df_si, how="inner", on="id")
+    day_info = get_allSms_todaySms(path_dy)
+    
+    # Небольшая реконструкция итогового датафрейма:
+    full_df = full_df.query('today_sms > 0') \
+                     .rename(columns={'id':'vk-id','raki':'Рачки','gold':'Монеты','likes':'Лайки','pearls':'Жемчуг',
+                                      'souls':'Души','exp':'Опыт','raki_trap_lvl':'Уровень раколовки',
+                                      'raki_per_sms_lvl':'Уровень дохода','nickname':'Имя','sex':'Пол',
+                                      'date_appearance':'Дата вступления','last_day_communication':'Последний день общения',
+                                      'all_sms':'Всего сообщений','today_sms':'Сообщений сегодня','bad_sms':'Плохих сообщений',
+                                      'opened_boxes':'Открыто коробок','doned_tasks':'Выполнено заданий'}) \
+                      .drop(columns=['f_name','l_name']) \
+                      .sort_values('Сообщений сегодня', ascending=False)
+    full_df["Пол"] = np.where(full_df['Пол'] == 1, "жен", "муж")
+    
+    # Сохранение картинки - датафрейма
+    plt.figure(figsize=(50, 130))
+    ax = plt.subplot(111, frame_on=False)
+    ax.xaxis.set_visible(False)
+    ax.yaxis.set_visible(False) 
+    table(ax, full_df, loc='center') 
+    plt.savefig(f'reports/{day_info["today"]}.png')
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
