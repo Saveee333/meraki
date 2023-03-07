@@ -2,13 +2,13 @@
   "users_balance": [
     {
       "265618599": {
-        "raki": 118,
+        "raki": 121,
         "gold": 0,
         "likes": 0,
         "gems": 0,
         "pearls": 0,
         "souls": 0,
-        "exp": 610,
+        "exp": 617,
         "raki_trap_lvl": 2,
         "raki_per_sms_lvl": 3
       },
@@ -35,13 +35,13 @@
         "raki_per_sms_lvl": 3
       },
       "168520154": {
-        "raki": 3533,
+        "raki": 3566,
         "gold": 139,
         "likes": 0,
         "gems": 0,
         "pearls": 0,
         "souls": 0,
-        "exp": 550,
+        "exp": 555,
         "raki_trap_lvl": 4,
         "raki_per_sms_lvl": 3
       },
@@ -68,13 +68,13 @@
         "raki_per_sms_lvl": 1
       },
       "611844259": {
-        "raki": 5422,
+        "raki": 5452,
         "gold": 145,
         "likes": 0,
         "gems": 0,
         "pearls": 0,
         "souls": 0,
-        "exp": 554,
+        "exp": 557,
         "raki_trap_lvl": 1,
         "raki_per_sms_lvl": 1
       },

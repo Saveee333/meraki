@@ -3,22 +3,26 @@
 # =============================================================================================== #
 
 """
-    Версия Бота 0.2.9
+    Версия Бота 0.3
     В версии git скрыта приватная информация.
 
-    - последние изменения: выполнен рефакторинг
+    - последние изменения: установлена автоматическая выгрузка данных в папку reports
+    Присылается автоматически фото с таблицей: информацией о каждом написавшем за сегодня
 
 """
 
 # =============================================================================================== #
 # Блок импортов библиотек и запуск longpoll бота
 
-import vk_api
-import random, string, json, datetime, heapq, codecs, time, traceback
+import vk_api, random, string, json, datetime, heapq, codecs, time, traceback
+import pandas as pd
+
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.utils import get_random_id
 from vk_api.upload import VkUpload
 from json import load,dump
+from meraki_dfs import *
+
 
 MAIN_TOKEN = None
 vk_session  = vk_api.VkApi(token = MAIN_TOKEN)
@@ -778,6 +782,7 @@ def enter_coupon(msg, user_id):
 # Блок с начальными действиями (выполнение функций, создание констант, переменных и т.д.):
 
 set_today()
+print('\nБот запущен!\n\n')
 
 # =============================================================================================== #
 # Блок обрабоки longpoll:
@@ -802,6 +807,7 @@ while True:
                     # Проверка на корректную дату:
                     if today != chat_info['today']:
                         set_today()
+                        
 
                     # Проверка на нового пользователя:
                     if user_id not in users_balance:
@@ -833,6 +839,7 @@ while True:
 # Блок команд, которые всегда будут выполняться без условий при любом сообщении:
 
                     add_sms_and_raki(user_id)
+                    daily_info()
 
 # =============================================================================================== #
 # Блок обновления и сохраненеия изменений json БД
